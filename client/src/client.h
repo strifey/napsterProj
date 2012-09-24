@@ -8,11 +8,12 @@
 #include <sys/socket.h>
 #include <netdb.h>
 
-#define PORT "12000"
+#define PORT "12001"
+#define MAXBUFF 100
 
 char *IP;
-struct addrinfo connInfo;
-struct addrinfo *srvInfo;
+struct addrinfo connInfo, *srvInfo, *pInfo;
 int sock;
+char buff[MAXBUFF];
 
 #endif
