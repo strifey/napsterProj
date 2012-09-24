@@ -1,19 +1,42 @@
 CC = gcc
-CFLAGS = -std=c99 -pedantic -Wall -Wextra
+CFLAGS = -pedantic -Wall -Wextra
 RELEASE_FLAGS = -O2
 DEBUG_FLAGS = -g -DDEBUG
+
 CLIENT_OUT = nClient
-SERVER_OUT = nServer
-CLIENT_FILES = client.c client.h
-CLIENT_DIR = ./client/src/
+CLIENT_HFILES = client.h
+CLIENT_CFILES  = $(CLIENT_HFILES:.h=.c)
+CLIENT_OFILES  = $(CLIENT_HFILES:.h=.o)
+CLIENT_DIR = ./client/
 CLIENT_DEPS = $(pathsubst %, $(CLIENT_DIR)/%, $(CLIENT_FILES))
-SERVER_FILES = server.c server.h
-SERVER_DIR = ./server/src
+
+SERVER_OUT = nServer
+SERVER_HFILES = server.h
+SERVER_CFILES  = $(SERVER_HFILES:.h=.c)
+SERVER_OFILES  = $(SERVER_HFILES:.h=.o)
+SERVER_DIR = ./server/
 SERVER_DEPS = $(pathsubst %, $(SERVER_DIR)/%, $(SERVER_FILES))
 
+build: build-client build-server
+
+remake: clean build
+
+run-client: build-client
+	./$(CLIENT_OUT)
+
+run-server: build-server
+	./$(SERVER_OUT)
+
 build-client: $(CLIENT_DEPS)
-	$(CC) $(CFLAGS) $(CLIENT_DIR)*.c -o ./$(CLIENT_OUT)
+	$(CC) $(CFLAGS) $(CLIENT_DIR)src/*.c -o ./$(CLIENT_OUT)
 
 build-server: $(SERVER_DEPS)
-	$(CC) $(CFLAGS) $(SERVER_DEPS)*.c -o ./$(SERVER_OUT)
+	$(CC) $(CFLAGS) $(SERVER_DIR)src/*.c -o ./$(SERVER_OUT)
 
+clean: clean-server clean-client
+
+clean-server:
+	rm $(SERVER_DIR)bin/*.o ./$(SERVER_OUT)
+
+clean-client:
+	rm $(CLIENT_DIR)bin/*.o ./$(CLIENT_OUT)
