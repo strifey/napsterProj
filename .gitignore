@@ -1,2 +1,7 @@
 cmake_install.cmake
 install_manifest.txt
+a.out
+nClient
+nServer
+*.swp
+*.swo
