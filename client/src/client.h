@@ -8,9 +8,11 @@
 #include <sys/socket.h>
 #include <netdb.h>
 
-#define PORT "12001"
+#define PORT "12000"
 #define MAXBUFF 100
 
+typedef enum _type{LIST,ADD, NONE} commType;
+commType client_comm = NONE;
 char *IP;
 struct addrinfo connInfo, *srvInfo, *pInfo;
 int sock;

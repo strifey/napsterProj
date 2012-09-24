@@ -2,10 +2,19 @@
 
 int main(int argc, char *argv[]){
 	/*TODO PARSE INPUT*/
-	if (argc < 1){
-		printf("Usage: \n\n\t");
-		printf("./nClient IP PORT listfiles|addfiles file1...\n");
+	if (argc < 4){
+		printf("Incorrect arguments. Usage: \n\t");
+		printf("./nClient COMMAND(listfiles|addfiles) IP PORT [file1...]\n");
 		exit(0);
+	}
+
+	if(!strcmp(argv[1], "addfiles"))
+		client_comm = ADD;
+	else if(!strcmp(argv[1], "listfiles"))
+		client_comm = LIST;
+	else{
+		printf("Incorrect client command. Use addfiles or listfiles.\n");
+		exit(1);
 	}
 
 	/*MAKE CONNECTION BASED ON THAT*/
@@ -37,19 +46,14 @@ int main(int argc, char *argv[]){
 		printf("Failed to conect\n");
 		exit(1);
 	}
+	if(client_comm == LIST){
+		/*follow procedure for LIST*/
+	}
+
 	recv(sock, buff, MAXBUFF-1, 0);
 	buff[MAXBUFF] = '\0';
 	printf("%s\n", buff);
 
-	/*GET LIST FROM SERVER*/
-	
-	/*ADD FILES TO SERVER*/
-	
-	/*GET CONFIRMATION FROM SERVER THAT LIST WAS UPDATED*/
-	
-	/*CLOSE SOCKET*/
 	close(sock);
-	printf("Program ending. Byyyyyye\n");
 	return 0;
 }
-

@@ -37,7 +37,7 @@ int main(int argc, char *argv[]){
 		/*ACCEPT connections and return what is queried for*/
 		cStorlen = sizeof(cStor);
 		client_sock = accept(sock, (struct sockaddr *)&cStor, &cStorlen);
-		printf("Accepted connection");
+		printf("Accepted connection\n");fflush(stdout);
 		if(client_sock < 0){
 			printf("Error accepting connection\n");
 			exit(1);
@@ -45,6 +45,7 @@ int main(int argc, char *argv[]){
 		char* hi = "hello!";
 		int hi_len = strlen(hi);
 		send(client_sock, hi, hi_len, 0);
+		printf("Sent packet\n");fflush(stdout);
 
 		close(client_sock);
 	}
