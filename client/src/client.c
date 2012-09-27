@@ -78,30 +78,31 @@ int main(int argc, char *argv[]){
 	}
 	else if(comm == ADD || comm == DEL){
 		printf("Sending add/del request: \n");
-		handle_ad(sock);
-		//handle_del(sock);
+		char res = handle_ad(sock);
 	}
 	close(sock);
 	return 0;
 }
 
-int handle_ad(int sock){
-	char * pack = malloc(sizeof(char)*(MAX_NAME_LEN+3)); pack[0] = comm;
+char handle_ad(int sock){
+	char * pack = malloc(sizeof(char)*(MAX_NAME_LEN+2)); pack[0] = comm;
+	pack[0] = comm;
 	pack[1] = '\0';
-	strcat(pack, "|");
+	strcat(pack, &DELIM);
 	strcat(pack, file_in);
+	printf("%s", pack);
 	int res = send(sock, pack, strlen(pack), 0);
 	if(res <= 0)
 		die_gracefully(sock, res);
 	return 0;
 }
 
-int handle_list(int sock){
+void handle_list(int sock){
 	//TODO SEND COMMAND
 	char * pack = malloc(sizeof(char)*(12));
 	pack[0] = comm;
 	pack[1] = '\0';
-	strcat(pack, "|");
+	strcat(pack, &DELIM);
 	strcat(pack, "garbage");
 	int sent = send(sock, pack, strlen(pack), 0);
 	if(sent <= 0)
@@ -119,7 +120,6 @@ int handle_list(int sock){
 	memset(buff, 0, MAXBUFF);
 	if(ret_len <= 0)
 		die_gracefully(sock, ret_len);
-	return 0;
 }
 
 void die_gracefully(int sock, int errval){

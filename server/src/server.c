@@ -56,18 +56,11 @@ int main(){
 		if(c_comm == NULL)
 			perror("ERROR PARSING COMMAND FROM BUFFER\n");
 		else if(!strcmp(c_comm, ADD_S)){
-			int ret = handle_add(client_sock, strtok(NULL, &DELIM));
-			if(!ret)
-				printf("Sucessfully added file\n");
-			else
-				perror("There was an issue adding the file\n");
+			handle_add(client_sock, strtok(NULL, &DELIM));
 		}
 		else if(!strcmp(c_comm, DEL_S)){
-			int ret = handle_del(client_sock, strtok(NULL, &DELIM));
-			if(!ret)
-				printf("Sucessfully deleted file\n");
-			else
-				perror("There was an issue deleting the file\n");
+			printf("trying to handle del\n");
+			handle_del(client_sock, strtok(NULL, &DELIM));
 		}
 		else if(!strcmp(c_comm, LST_S)){
 			handle_list(client_sock);
@@ -110,14 +103,9 @@ int handle_add(int client_sock, char*filename){
 	inet_ntop(AF_INET, &((struct sockaddr_in *)&cStor)->sin_addr, new_ip, cStorlen);
 	int res_add = add_node(file_list, filename, new_ip);
 	int res_save = save_list(file_list, lpath);
-	int t_res = res_add || res_save;
-	if(!t_res)
-		send(client_sock, &SUCESS, 1, 0);
-	else
-		send(client_sock, &UNSCESS, 1, 0);
 	free(new_ip);
 	print_list(file_list);
-	return t_res;
+	return res_add+res_save;
 }
 
 int handle_del(int client_sock, char*filename){
@@ -125,12 +113,7 @@ int handle_del(int client_sock, char*filename){
 	inet_ntop(AF_INET, &((struct sockaddr_in *)&cStor)->sin_addr, new_ip, cStorlen);
 	int res_del = del_node(file_list, filename, new_ip);
 	int res_save = save_list(file_list, lpath);
-	int t_res = res_del || res_save;
-	if(!t_res)
-		send(client_sock, &SUCESS, 1, 0);
-	else
-		send(client_sock, &UNSCESS, 1, 0);
 	free(new_ip);
 	print_list(file_list);
-	return t_res;
+	return res_del+res_save;
 }

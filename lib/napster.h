@@ -15,6 +15,8 @@ char SUCESS = 'S';
 char UNSCESS ='U';
 char DELIM = '|';
 char ACK = 'Y'; 
+char EXIST = 'E';
+char DNE = 'D';
 
 //Max size to send allowable
 #define MAXBUFF 1400

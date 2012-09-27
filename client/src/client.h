@@ -16,7 +16,7 @@ struct addrinfo connInfo, *srvInfo, *pInfo;
 int sock;
 char buff[MAXBUFF];
 
-int handle_ad(int sock);
-int handle_list(int sock);
+char handle_ad(int sock);
+void handle_list(int sock);
 void die_gracefully(int sock, int errval);
 #endif

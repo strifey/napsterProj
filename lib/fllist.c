@@ -91,10 +91,11 @@ int add_node_from_file(fllist *file_list, char*filestring){
 }
 
 //adds node from new information from client
+//returns -2 if already exists in list
 int add_node(fllist *file_list, char *filename, char *new_ip){
 	//don't allow duplicates
 	if(list_contains(file_list, filename, new_ip))
-		return -1;
+		return -2;
 	
 	//create new new node
 	filenode *new_node = (filenode *)malloc(sizeof(filenode));
