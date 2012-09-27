@@ -11,8 +11,6 @@
 #include "../../lib/napster.h"
 #include "../../lib/fllist.h"
 
-#define MAX_NAME_LEN 100
-
 char *ip, *port, *file_in, comm='E';
 struct addrinfo connInfo, *srvInfo, *pInfo;
 int sock;

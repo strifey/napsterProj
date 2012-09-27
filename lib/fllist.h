@@ -6,6 +6,7 @@
 #include "stdio.h"
 
 #define MAX_FILES 200
+#define MAX_NAME_LEN 50
 
 typedef struct _filenode{
 	char* ip;

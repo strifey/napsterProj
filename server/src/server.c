@@ -84,7 +84,6 @@ void handle_list(int client_sock){
 		send(client_sock, &eof, 1, 0);
 		return;
 	}
-	char ack = 'A';
 	for(filenode *i = file_list->head; i != NULL; i=i->next){
 		char*s_node = serialize_node(i);
 		strcpy(buff,s_node);
@@ -93,7 +92,7 @@ void handle_list(int client_sock){
 			return;
 		}
 		printf("Sent: %s\n", buff);
-		if(recv(client_sock, &ack, 1, 0) <= 0){
+		if(recv(client_sock, &ACK, 1, 0) <= 0){
 			perror("Client closed connection or there was a issue in the connection. Closing.\n");
 			return;
 		}
@@ -112,17 +111,27 @@ int handle_add(int client_sock, char*filename){
 	inet_ntop(AF_INET, &((struct sockaddr_in *)&cStor)->sin_addr, new_ip, cStorlen);
 	int res_add = add_node(file_list, filename, new_ip);
 	int res_save = save_list(file_list, lpath);
+	int t_res = res_add || res_save;
+	if(!t_res)
+		send(client_sock, &SUCESS, 1, 0);
+	else
+		send(client_sock, &UNSCESS, 1, 0);
 	free(new_ip);
 	print_list(file_list);
-	return res_add || res_save;
+	return t_res;
 }
 
 int handle_del(int client_sock, char*filename){
 	char *new_ip = (char*)malloc(sizeof(char)*(INET_ADDRSTRLEN+1));
 	inet_ntop(AF_INET, &((struct sockaddr_in *)&cStor)->sin_addr, new_ip, cStorlen);
-	int res_add = del_node(file_list, filename, new_ip);
+	int res_del = del_node(file_list, filename, new_ip);
 	int res_save = save_list(file_list, lpath);
+	int t_res = res_del || res_save;
+	if(!t_res)
+		send(client_sock, &SUCESS, 1, 0);
+	else
+		send(client_sock, &UNSCESS, 1, 0);
 	free(new_ip);
 	print_list(file_list);
-	return res_add || res_save;
+	return t_res;
 }

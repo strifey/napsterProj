@@ -5,11 +5,16 @@
 #define ADD 'A'
 #define DEL 'D'
 #define LST 'L'
-#define DELIM '|'
 #define ADD_S "A"
 #define DEL_S "D"
 #define LST_S "L"
 #define DELIM_S "|"
+
+//Const char flags
+char SUCESS = 'S';
+char UNSCESS ='U';
+char DELIM = '|';
+char ACK = 'Y'; 
 
 //Max size to send allowable
 #define MAXBUFF 1400

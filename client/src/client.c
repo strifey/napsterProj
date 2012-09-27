@@ -13,7 +13,7 @@ int main(int argc, char *argv[]){
 		comm = ADD;
 		//check filename length
 		if(strlen(argv[4]) > MAX_NAME_LEN){
-			perror("Filename too long. Keep under 100 characters\n");
+			printf("Filename too long. Keep under %d characters\n", MAX_NAME_LEN);
 			exit(1);
 		}
 		file_in = argv[4];
@@ -99,7 +99,6 @@ int handle_ad(int sock){
 int handle_list(int sock){
 	//TODO SEND COMMAND
 	char * pack = malloc(sizeof(char)*(12));
-	char ack = 'A';
 	pack[0] = comm;
 	pack[1] = '\0';
 	strcat(pack, "|");
@@ -112,7 +111,7 @@ int handle_list(int sock){
 		buff[ret_len] = '\0';
 		printf("%s\n", buff);
 		memset(buff, 0, MAXBUFF);
-		int sr = send(sock, &ack, 1, 0);
+		int sr = send(sock, &ACK, 1, 0);
 		if(sr<=0)
 			die_gracefully(sock, sr);
 		ret_len = recv(sock, buff, MAXBUFF, 0);
