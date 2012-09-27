@@ -8,16 +8,17 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include "../../lib/napster.h"
 #include "../../lib/fllist.h"
 
-#define PORT "12001"
+#define MAX_NAME_LEN 100
 
-typedef enum _type{LIST,ADD, NONE} commType;
-commType client_comm = NONE;
-char ans, *ip, *port, *file_in;
+char *ip, *port, *file_in, comm='E';
 struct addrinfo connInfo, *srvInfo, *pInfo;
-int sock, del=0;
+int sock;
+char buff[MAXBUFF];
 
-int handle_add(int client_sock);
-int handle_list(int client_sock);
+int handle_ad(int sock);
+int handle_list(int sock);
+void die_gracefully(int sock, int errval);
 #endif

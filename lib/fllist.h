@@ -23,10 +23,11 @@ typedef struct _filelist{
 fllist* create_list();
 void load_list(fllist* file_list, const char* lpath);
 int save_list(fllist *file_list, const char* lpath);
-int add_node(fllist *file_list, char*filestring);
-int del_node(fllist *file_list, char*filestring);
-int nodes_eq(filenode *node1, filenode *node2);
+int add_node_from_file(fllist *file_list, char*filestring);
+int add_node(fllist *file_list, char *filename, char *new_ip);
+int del_node(fllist *file_list, char *del_filename, char* del_ip);
+int node_eq(filenode *node, char*fn, char*ip);
 char* serialize_node(filenode* fnode);
-
-
+void print_list(fllist *file_list);
+int list_contains(fllist *file_list, char*fn, char*ip);
 #endif

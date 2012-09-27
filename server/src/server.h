@@ -8,11 +8,10 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include "../../lib/napster.h"
 #include "../../lib/fllist.h"
 
-#define PORT "12001"
-#define BACKLOG 5
-
+#define BACKLOG 12
 
 /*Variables*/
 struct addrinfo connInfo, *srvInfo, *pInfo;
@@ -22,9 +21,11 @@ socklen_t cStorlen;
 fllist *file_list;
 const char* lpath = "./.list";
 char *c_comm;
+char buff[MAXBUFF];
 
 /*Delarations*/
 void die_gracefully();
-int handle_list(int client_sock);
-int handle_add(int client_sock);
+void handle_list(int client_sock);
+int handle_add(int client_sock, char*filename);
+int handle_del(int client_sock, char*filename);
 #endif

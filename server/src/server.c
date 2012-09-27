@@ -12,7 +12,7 @@ int main(){
 	connInfo.ai_flags = AI_PASSIVE;
 	getaddrinfo(NULL, PORT, &connInfo, &srvInfo);
 
-	/*FOR loop here*/
+	/*for loop to determine corr addr info*/
 	for(pInfo = srvInfo; pInfo != NULL; pInfo = pInfo->ai_next){
 		sock = socket(srvInfo->ai_family, srvInfo->ai_socktype, srvInfo->ai_protocol);
 		if(sock <0){
@@ -35,7 +35,7 @@ int main(){
 		perror("listening failed\n");
 		exit(1);
 	}
-	printf("Now listening\n");
+	printf("Server now running and  listening\n");
 	while(1){
 		/*ACCEPT connections and return what is queried for*/
 		cStorlen = sizeof(cStor);
@@ -43,84 +43,86 @@ int main(){
 		printf("Accepted connection\n");fflush(stdout);
 		if(client_sock < 0){
 			perror("Error accepting connection\n");
-			exit(1);
+			close(client_sock);
+			continue;
 		}
-		char *c_comm = malloc(sizeof(char)*3);
-		recv(client_sock, c_comm, 3, 0);
-		c_comm[3] = '\0';
-		printf("%s\n", c_comm);
-		if(!strcmp(c_comm, "ADD")){
-			//addfile requested
-			int res = handle_add(client_sock);
-			if(res == 0)
-				printf("Handled add successfully\n");
+		int res_recv = recv(client_sock, buff, MAXBUFF, 0);
+		if(res_recv <= 0){
+			perror("Error recieving intial command/file from client\n");
+			close(client_sock);
+			continue;
+		}
+		char delim = DELIM;
+		c_comm = strtok(buff, &delim);
+		if(c_comm == NULL)
+			perror("ERROR PARSING COMMAND FROM BUFFER\n");
+		else if(!strcmp(c_comm, ADD_S)){
+			int ret = handle_add(client_sock, strtok(NULL, &delim));
+			if(!ret)
+				printf("Sucessfully added file\n");
 			else
-				perror("Error occurred handling add\n");
+				perror("There was an issue adding the file\n");
 		}
-		else if(!strcmp(c_comm, "LST")){
-			//filelist requested
-			int res = handle_list(client_sock);
-			if(res == 0)
-				printf("Handled list successfully\n");
+		else if(!strcmp(c_comm, DEL_S)){
+			int ret = handle_del(client_sock, strtok(NULL, &delim));
+			if(!ret)
+				printf("Sucessfully deleted file\n");
 			else
-				perror("Error occurred handling list\n");
+				perror("There was an issue deleting the file\n");
 		}
-		close(client_sock);
+		else if(!strcmp(c_comm, LST_S)){
+			handle_list(client_sock);
+			printf("Sent list to client\n");
+		}
+		memset(buff, 0, MAXBUFF);
 	}
-	/*CLOSE SOCKET*/
-	close(sock);
-	printf("Server closing, socket closed\n");
-	return 0;
 }
 
-int handle_add(int client_sock){
-	int recv_res = 0;
-	printf("Add recieved\n");
-	char fn_size = 0;
-	recv_res = recv(client_sock, &recv_res, 1, 0);
-	if (recv_res < 0){
-		//handle error
+void handle_list(int client_sock){
+	char eof = EOF;
+	if(file_list->size == 0){
+		send(client_sock, &eof, 1, 0);
+		return;
 	}
-	char *fn = (char*)malloc(sizeof(char)*fn_size);
-	recv_res = recv(client_sock, fn, fn_size, 0);
-	if(recv_res <= 0){
-		//handle error
-	}
-	fn[(int)fn_size] = '\0';
-	char d = 0;
-	recv_res = recv(client_sock, &d, 1, 0);
-	if(recv_res <= 0){
-		//handle error continue
-	}
-	char res_a = -1;
-	if(d == 'D');
-		//call delete
-		//res_a = (char) del_node(file_list, fn);
-	else if(d == 'N'){
-		res_a = (char) add_node(file_list, fn);
-	}
-	if(!res_a){
-		char s = 'S';
-		int send_res = send(client_sock, &s, 1, 0);
-		if(send_res == 1)
-			return 0;
-		else{
-			//handle failure to confirm
+	char ack = 'A';
+	for(filenode *i = file_list->head; i != NULL; i=i->next){
+		char*s_node = serialize_node(i);
+		strcpy(buff,s_node);
+		if(send(client_sock, buff, strlen(buff), 0) <= 0){
+			perror("Client closed connection or there was a issue in the connection. Closing.\n");
+			return;
 		}
-	}
-	else{
-		char u = 'U';
-		int send_res = send(client_sock, &u, 1, 0);
-		if(send_res == 1)
-			return 0;
-		else{
-			//handle failure to confirm
+		printf("Sent: %s\n", buff);
+		if(recv(client_sock, &ack, 1, 0) <= 0){
+			perror("Client closed connection or there was a issue in the connection. Closing.\n");
+			return;
 		}
+		memset(buff, 0, MAXBUFF);
+		free(s_node);
 	}
-	return -1;
+	if(send(client_sock, &eof, 1, 0) <= 0){
+			perror("Client closed connection or there was a issue in the connection. Closing.\n");
+			return;
+	}
+	return;
 }
 
-int handle_list(int client_sock){
-	printf("Add recieved\n");
-	send(client_sock, "Y", 1, 0);
+int handle_add(int client_sock, char*filename){
+	char *new_ip = (char*)malloc(sizeof(char)*(INET_ADDRSTRLEN+1));
+	inet_ntop(AF_INET, &((struct sockaddr_in *)&cStor)->sin_addr, new_ip, cStorlen);
+	int res_add = add_node(file_list, filename, new_ip);
+	int res_save = save_list(file_list, lpath);
+	free(new_ip);
+	print_list(file_list);
+	return res_add || res_save;
+}
+
+int handle_del(int client_sock, char*filename){
+	char *new_ip = (char*)malloc(sizeof(char)*(INET_ADDRSTRLEN+1));
+	inet_ntop(AF_INET, &((struct sockaddr_in *)&cStor)->sin_addr, new_ip, cStorlen);
+	int res_add = del_node(file_list, filename, new_ip);
+	int res_save = save_list(file_list, lpath);
+	free(new_ip);
+	print_list(file_list);
+	return res_add || res_save;
 }

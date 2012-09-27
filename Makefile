@@ -8,6 +8,8 @@ LIB_CFILES = $(LIB_HFILES:.h=.c)
 LIB_FILES = $(LIB_CFILES) $(LIB_HFILES)
 LIB_DIR = ./lib
 
+GLOBAL_HEADER = ./lib/napster.h
+
 CLIENT_OUT = nClient
 CLIENT_HFILES = client.h
 CLIENT_CFILES  = $(CLIENT_HFILES:.h=.c)
@@ -33,16 +35,16 @@ run-client: build-client
 run-server: build-server
 	./$(SERVER_OUT)
 
-build-client: $(CLIENT_DEPS)
+build-client: $(CLIENT_DEPS) $(GLOBAL_HEADER)
 	$(CC) $(CFLAGS) $(LIB_DIR)/fllist.c $(CLIENT_DIR)/src/*.c -o ./$(CLIENT_OUT)
 
-build-server: $(SERVER_DEPS)
+build-server: $(SERVER_DEPS) $(GLOBAL_HEADER)
 	$(CC) $(CFLAGS) $(LIB_DIR)/fllist.c $(SERVER_DIR)/src/*.c -o ./$(SERVER_OUT)
 
 clean: clean-server clean-client
 
 clean-server:
-	rm $(SERVER_DIR)/bin/*.o ./$(SERVER_OUT)
+	rm ./$(SERVER_OUT)
 
 clean-client:
-	rm $(CLIENT_DIR)/bin/*.o ./$(CLIENT_OUT)
+	rm ./$(CLIENT_OUT)
