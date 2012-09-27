@@ -52,19 +52,18 @@ int main(){
 			close(client_sock);
 			continue;
 		}
-		char delim = DELIM;
-		c_comm = strtok(buff, &delim);
+		c_comm = strtok(buff, &DELIM);
 		if(c_comm == NULL)
 			perror("ERROR PARSING COMMAND FROM BUFFER\n");
 		else if(!strcmp(c_comm, ADD_S)){
-			int ret = handle_add(client_sock, strtok(NULL, &delim));
+			int ret = handle_add(client_sock, strtok(NULL, &DELIM));
 			if(!ret)
 				printf("Sucessfully added file\n");
 			else
 				perror("There was an issue adding the file\n");
 		}
 		else if(!strcmp(c_comm, DEL_S)){
-			int ret = handle_del(client_sock, strtok(NULL, &delim));
+			int ret = handle_del(client_sock, strtok(NULL, &DELIM));
 			if(!ret)
 				printf("Sucessfully deleted file\n");
 			else
