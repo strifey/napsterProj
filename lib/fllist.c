@@ -126,7 +126,6 @@ int del_node(fllist *file_list, char *del_filename, char* del_ip){
 	//return -2 if empty
 	if(file_list->size == 0)
 		return -2;
-	printf("delete: %s, %s\n", del_filename, del_ip);
 	//check head for matching node
 	if(node_eq(file_list->head, del_filename, del_ip)){
 		printf("Deleting head!\n");
@@ -145,10 +144,7 @@ int del_node(fllist *file_list, char *del_filename, char* del_ip){
 	//iterate through list to find to delete
 	filenode *prev_node = file_list->head;
 	for(filenode *i_node = prev_node->next;i_node != NULL; i_node = i_node->next){
-		printf("i_node: %s, prev_node: %s\n", i_node->filename, prev_node->filename);
 		if(node_eq(i_node, del_filename, del_ip)){
-			printf("Found the node to delete!\n");
-			printf("at time of delete: i_node: %s, prev_node: %s\n", i_node->filename, prev_node->filename);
 			filenode*tmp = i_node;
 			prev_node->next = i_node->next;
 			tmp->next = NULL;

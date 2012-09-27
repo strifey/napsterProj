@@ -72,13 +72,13 @@ int main(int argc, char *argv[]){
 		exit(1);
 	}
 	if(comm == LST){
-		printf("Requesting list:\n");
+		printf("Requesting list:\n\n");
 		handle_list(sock);
 		//handle_list
 	}
 	else if(comm == ADD || comm == DEL){
-		printf("Sending add/del request: \n");
 		char res = handle_ad(sock);
+		printf("Sent add/del request \n");
 	}
 	close(sock);
 	return 0;
@@ -90,7 +90,6 @@ char handle_ad(int sock){
 	pack[1] = '\0';
 	strcat(pack, "|");
 	strcat(pack, file_in);
-	printf("%s", pack);
 	int res = send(sock, pack, strlen(pack), 0);
 	if(res <= 0)
 		die_gracefully(sock, res);
@@ -110,7 +109,6 @@ void handle_list(int sock){
 	int ret_len = recv(sock, buff, MAXBUFF, 0);
 	while(ret_len > 1){
 		buff[ret_len] = '\0';
-		printf("%s\n", buff);
 		memset(buff, 0, MAXBUFF);
 		int sr = send(sock, &ack, 1, 0);
 		if(sr<=0)
