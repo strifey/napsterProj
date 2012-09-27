@@ -21,7 +21,7 @@ void load_list(fllist* file_list, const char* lpath){
 	}
 	char* line_buff = NULL;
 	for(int i = 0; i<MAX_FILES; i++){
-		size_t n = MAX_NAME_LEN+1;
+		size_t n = MAX_NAME_LEN;
 		int eol = getline(&line_buff, &n, listf);
 		if(eol == -1){
 			break;
