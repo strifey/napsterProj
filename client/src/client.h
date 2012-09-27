@@ -11,6 +11,7 @@
 #include "../../lib/napster.h"
 #include "../../lib/fllist.h"
 
+
 char *ip, *port, *file_in, comm='E';
 struct addrinfo connInfo, *srvInfo, *pInfo;
 int sock;

@@ -1,5 +1,5 @@
-CC = gcc
-CFLAGS = -std=gnu99 -pedantic -Wall -Wextra
+CC = gcc-4.7
+CFLAGS = -std=gnu11 -pedantic -Wall -Wextra
 RELEASE_FLAGS = -O2
 DEBUG_FLAGS = -g -DDEBUG
 
